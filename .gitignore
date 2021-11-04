@@ -1,0 +1,7 @@
+.import/
+export_presets.cfg
+*.translation
+.mono/
+
+*.flp
+Build/

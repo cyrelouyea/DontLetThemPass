@@ -1,0 +1,150 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://Scenes/SlowBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Laser.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/EnergyBar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scripts/HiScore.gd" type="Script" id=4]
+[ext_resource path="res://Fonts/hello-denver.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://Scripts/Border.gd" type="Script" id=6]
+[ext_resource path="res://Scripts/Score.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/Main.gd" type="Script" id=9]
+[ext_resource path="res://Scripts/BackgroundEffect.gd" type="Script" id=10]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+blend_mode = 1
+
+[sub_resource type="DynamicFont" id=2]
+size = 40
+font_data = ExtResource( 5 )
+
+[sub_resource type="CanvasItemMaterial" id=3]
+blend_mode = 1
+
+[sub_resource type="DynamicFont" id=4]
+size = 40
+font_data = ExtResource( 5 )
+
+[sub_resource type="CanvasItemMaterial" id=5]
+blend_mode = 1
+
+[sub_resource type="Shader" id=6]
+code = "shader_type canvas_item;
+
+uniform float ampl;
+uniform float gray_scale;
+
+void fragment() {
+	vec4 bg = texture(SCREEN_TEXTURE, SCREEN_UV + ampl * vec2(0, cos(25f*SCREEN_UV.x)));
+	vec4 bg2 = texture(SCREEN_TEXTURE, SCREEN_UV - ampl * vec2(0, cos(100f*SCREEN_UV.x)));
+	
+	COLOR = vec4((bg.r + bg2.r)/2f, bg.g, bg.b, 1f);
+	
+	vec3 avg = vec3(0.0, COLOR.r/2f, COLOR.r);
+	COLOR.rgb = COLOR.rgb * (1f - gray_scale) + gray_scale * avg;
+}"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
+shader_param/ampl = 0.0
+shader_param/gray_scale = null
+
+[sub_resource type="ShaderMaterial" id=8]
+
+[node name="Game" type="Node2D"]
+script = ExtResource( 9 )
+
+[node name="BackgroundEffect" type="Node2D" parent="."]
+script = ExtResource( 10 )
+
+[node name="Control" type="Control" parent="."]
+margin_top = -2.0
+margin_right = 40.0
+margin_bottom = 38.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Score" type="Label" parent="Control"]
+material = SubResource( 1 )
+margin_left = 1.49831
+margin_top = 1.49831
+margin_right = 94.4983
+margin_bottom = 41.4983
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "SCORE:"
+align = 1
+valign = 1
+script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HiScore" type="Label" parent="Control"]
+material = SubResource( 1 )
+margin_left = 272.498
+margin_top = 1.49831
+margin_right = 380.498
+margin_bottom = 41.4983
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "HIGH SCORE: "
+align = 1
+valign = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnergyBar" parent="Control" instance=ExtResource( 3 )]
+material = SubResource( 3 )
+position = Vector2( 959, 23 )
+
+[node name="Label" type="Label" parent="Control/EnergyBar"]
+margin_left = -79.213
+margin_top = -18.9542
+margin_right = -39.213
+margin_bottom = 21.0458
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "E"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlowBar" parent="Control" instance=ExtResource( 1 )]
+material = SubResource( 5 )
+position = Vector2( 800, 23 )
+
+[node name="Label" type="Label" parent="Control/SlowBar"]
+margin_left = -79.213
+margin_top = -18.9542
+margin_right = -39.213
+margin_bottom = 21.0458
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "S"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 512, 300 )
+current = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
+
+[node name="ColorRect" type="ColorRect" parent="Camera2D/CanvasLayer"]
+material = SubResource( 7 )
+margin_right = 1024.0
+margin_bottom = 600.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Laser" parent="." instance=ExtResource( 2 )]
+material = SubResource( 8 )
+
+[node name="Border" type="Node2D" parent="."]
+script = ExtResource( 6 )

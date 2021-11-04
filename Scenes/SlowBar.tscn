@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Scripts/EnergyBar.gd" type="Script" id=1]
+[ext_resource path="res://Textures/energy_bar_2.png" type="Texture" id=2]
+[ext_resource path="res://Textures/energy_bar.png" type="Texture" id=3]
+
+[sub_resource type="CanvasItemMaterial" id=7]
+blend_mode = 1
+
+[sub_resource type="Shader" id=2]
+code = "shader_type canvas_item;
+render_mode blend_add;
+
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	// COLOR.rgb = vec3(0, COLOR.r / 2f, COLOR.r);
+}"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+
+[sub_resource type="Shader" id=5]
+code = "shader_type canvas_item;
+render_mode blend_add;
+
+uniform float bar_effect_pos;
+
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	// COLOR.rgb = vec3(0, COLOR.r / 2f, COLOR.r);
+	
+	float pos = bar_effect_pos;
+	float dist = abs(pos - UV.x);
+	COLOR.rgb *= 1f - clamp(dist, 0, 0.4);
+
+}"
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = SubResource( 5 )
+shader_param/bar_effect_pos = null
+
+[node name="SlowBar" type="Node2D"]
+material = SubResource( 7 )
+position = Vector2( 959.463, 22.7042 )
+script = ExtResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 3 )
+texture = ExtResource( 3 )
+
+[node name="Sprite2" type="Sprite" parent="."]
+material = SubResource( 4 )
+position = Vector2( 0.707092, 0 )
+texture = ExtResource( 2 )
+centered = false
+offset = Vector2( -55, -11 )
+region_enabled = true
+region_rect = Rect2( 0, 0, 120, 22 )

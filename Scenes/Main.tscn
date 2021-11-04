@@ -1,0 +1,96 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Scenes/Game.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Ball.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/GameOver.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Sounds/bg.ogg" type="AudioStream" id=4]
+[ext_resource path="res://Scenes/DeathAnim.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Sounds/death.wav" type="AudioStream" id=6]
+[ext_resource path="res://Scenes/Tutorial.tscn" type="PackedScene" id=9]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+signal end_game
+
+var timer = 0.0
+var show = true
+var tutorial = true
+var game_over = false
+
+func _ready():
+	var data = SaveUtility.load_file()
+	if data == null:
+		$Game.set_hi_score(0)
+	else:
+		$Game.set_hi_score(data[\"hi_score\"])
+	$BackgroundMusic.play()
+
+func _process(delta):
+	if tutorial:
+		_play_tutorial(delta)
+	
+	if game_over:
+		_play_game_over(delta)
+		
+	if Input.is_action_just_pressed(\"quit\"):
+		get_tree().quit()
+	
+	$BackgroundMusic.pitch_scale = Global.speed
+	$DeathSound.pitch_scale = Global.speed
+
+func _play_tutorial(delta):
+	if timer < 2.0:
+		if show:
+			$Tutorial.modulate.a = timer / 2.0
+			$Game.modulate.a = timer / 2.0
+		else:
+			$Tutorial.modulate.a = 1 - timer / 2.0
+				
+	if !show && timer > 2.0:
+		$Game.start_game()
+		$Tutorial.hide()
+		tutorial = false
+		
+	if Input.is_action_just_pressed(\"shoot\") and timer > 2.0:
+		show = false
+		timer = 0.0
+	
+	timer += delta
+	
+func _play_game_over(delta):
+	if Input.is_action_just_pressed(\"shoot\") and timer > 1.0:
+		$Game.start_game()
+		$GameOver.hide()
+		game_over = false
+		
+	timer += delta
+
+func _on_Game_end_game(score: int, is_new_hi_score: bool):
+	game_over = true
+	$GameOver.show()
+	$GameOver/GameOver/Score.text = \"SCORE: \" + str(score)
+	$DeathSound.play()
+	timer = 0
+	
+"
+
+[node name="GameManager" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="Tutorial" parent="." instance=ExtResource( 9 )]
+
+[node name="Game" parent="." instance=ExtResource( 1 )]
+ball_sc = ExtResource( 2 )
+death_sc = ExtResource( 5 )
+
+[node name="GameOver" parent="." instance=ExtResource( 3 )]
+visible = false
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+
+[connection signal="end_game" from="Game" to="." method="_on_Game_end_game"]

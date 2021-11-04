@@ -1,0 +1,11 @@
+Engine: 
+Godot Engine (https://godotengine.org/license)
+
+SE:
+Deep kick (https://freesound.org/people/TheFlakesMaster/sounds/399896/) (cc0)
+Laser (https://freesound.org/people/Daleonfire/sounds/376694/)
+
+Font:
+Hello Denver (https://www.1001fonts.com/hello-denver-display-font.html)
+
+Art, code, other se, bgm made by me.

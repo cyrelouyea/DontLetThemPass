@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/kick.ogg-52d681c91df4fdb87b1d8bbba822068a.oggstr"
+
+[deps]
+
+source_file="res://Sounds/kick.ogg"
+dest_files=[ "res://.import/kick.ogg-52d681c91df4fdb87b1d8bbba822068a.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0
